@@ -14,11 +14,13 @@ Protocus is a frame-based binary protocol built on top of TCP. The main advantag
 
 A command will have the following structure: 
 
-The first 4 bits of the command are dedicated to encode the type of command itself as integers, we will specify the available commands later in this document. The following 16 bits encode as integer the size in bytes of the headers. The next 32 bit encode as integer the size of the file beign transferred. Following the file size, we will attach the headers, each command will have its own required headers, they will be a set of bytes encoding a JSON string where each key/value pair is equivalent to a header. Finally, the file bytes are attached to the end, without any specific delimiter. The chain of bytes for a command could be splitted like this:
+The first 8 bits of the command are dedicated to encode the type of command itself as integers, we will specify the available commands later in this document. The following 16 bits encode as integer the size in bytes of the headers. The next 32 bit encode as integer the size of the file beign transferred. Following the file size, we will attach the headers, each command will have its own required headers, they will be a set of bytes encoding a JSON string where each key/value pair is equivalent to a header. Finally, the file bytes are attached to the end, without any specific delimiter. The chain of bytes for a command could be splitted like this:
 
 ```
 [command][headers_size][file_size][headers_data][file_data]
 ```
+
+The headers_data and file_data are optional, depends on the command and what it need to acomplish its responsability, hence headers_size and file_size can be 0.
 
 ### Commands
 
@@ -51,3 +53,7 @@ Failed to process a command. Required Headers:
   "message": "error happened for some reason"
 }
 ```
+
+### Final notes
+
+The disadventage of binary protocols is the hard-of-use, as working directly with bytes is not convinient, this is different from the text-based protocols that are huma-readable. For that reason the *protocus* library was created for Go, the responsability of the library is to encode and decode commands, so other Go programs can make use of the protocol easily.
